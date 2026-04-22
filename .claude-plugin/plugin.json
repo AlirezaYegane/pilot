@@ -1,0 +1,9 @@
+{
+  "name": "pilot",
+  "version": "0.1.0",
+  "description": "Autopilot for Claude Code sessions",
+  "author": "@your-handle",
+  "homepage": "https://github.com/your-name/pilot",
+  "keywords": ["claude-code", "monitoring", "budget", "handoff"],
+  "license": "MIT"
+}

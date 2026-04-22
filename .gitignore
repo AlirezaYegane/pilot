@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local runtime data
+.local/
+tmp/
+logs/
+debug.log
+
+# Pilot local data
+.claude/plugins/pilot/data/
+.claude/plugins/pilot/debug.log
+
+# Build artifacts
+build/
+dist/
