@@ -1,2 +1,1 @@
 """Pilot module placeholder."""
-
