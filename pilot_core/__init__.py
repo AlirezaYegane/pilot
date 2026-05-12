@@ -29,6 +29,23 @@ from pilot_core.constants import (
     should_prepare_handoff,
     signal_weight,
 )
+from pilot_core.paths import (
+    RuntimePaths,
+    default_data_dir,
+    default_debug_log_path,
+    ensure_runtime_dirs,
+    expand_path,
+    resolve_runtime_paths,
+    runtime_path_summary,
+)
+from pilot_core.safety import (
+    fail_silent,
+    log_exception,
+    run_safely,
+    safe_string,
+    utc_timestamp,
+    write_debug_log,
+)
 
 try:
     __version__ = version("pilot-cc")
@@ -48,16 +65,29 @@ __all__ = [
     "Defaults",
     "ExitCode",
     "HookEvent",
+    "RuntimePaths",
     "SessionState",
     "Severity",
     "SignalName",
     "__version__",
     "default_activation_mode",
+    "default_data_dir",
+    "default_debug_log_path",
+    "ensure_runtime_dirs",
+    "expand_path",
+    "fail_silent",
     "is_terminal_session_state",
+    "log_exception",
     "parse_activation_mode",
     "parse_session_state",
     "parse_severity",
     "parse_signal_name",
+    "resolve_runtime_paths",
+    "run_safely",
+    "runtime_path_summary",
+    "safe_string",
     "should_prepare_handoff",
     "signal_weight",
+    "utc_timestamp",
+    "write_debug_log",
 ]
