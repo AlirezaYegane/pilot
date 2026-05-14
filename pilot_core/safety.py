@@ -52,11 +52,11 @@ def write_debug_log(message: str, *, debug_log_path: str | Path | None = None) -
     """
 
     try:
-        path = (
-            Path(debug_log_path)
-            if debug_log_path is not None
-            else resolve_runtime_paths().debug_log_path
-        )
+        if debug_log_path is None:
+            path = resolve_runtime_paths().debug_log_path
+        else:
+            path = Path(debug_log_path)
+
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as file:
             file.write(f"{utc_timestamp()} {message}\n")
