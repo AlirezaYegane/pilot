@@ -36,14 +36,28 @@ def test_schema_version_is_first_storage_version() -> None:
 
 
 def test_schema_declares_tables_in_creation_order() -> None:
-    assert schema_table_names() == ("schema_migrations", "sessions", "turns")
+    assert schema_table_names() == (
+        "schema_migrations",
+        "sessions",
+        "turns",
+        "tool_uses",
+        "signals",
+        "alerts",
+    )
     assert tuple(table.name for table in TABLES) == schema_table_names()
 
 
 def test_schema_summary_is_serialisable() -> None:
     assert schema_summary() == {
         "schema_version": 1,
-        "tables": ("schema_migrations", "sessions", "turns"),
+        "tables": (
+            "schema_migrations",
+            "sessions",
+            "turns",
+            "tool_uses",
+            "signals",
+            "alerts",
+        ),
     }
 
 

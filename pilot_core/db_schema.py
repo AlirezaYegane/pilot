@@ -1,61 +1,36 @@
-"""SQLite schema definitions for Pilot storage.
+"""SQLite schema definitions for Pilot.
 
-Day 8 scope:
-- define schema version metadata
-- define sessions table
-- define turns table
-- define initial indexes
-- keep execution separate from storage/bootstrap logic
+Day 8 introduced the core session and turn tables.
+Day 9 adds event-level tables for tool usage, signal evaluations, and alerts.
 
-Bootstrap, migrations, WAL mode, and repository APIs are intentionally left for
-later storage days.
+This module keeps the Day 8 public API stable while extending the schema for
+Day 9.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pilot_core.constants import SessionState
-
 SCHEMA_VERSION = 1
 
 
 @dataclass(frozen=True)
 class TableSchema:
-    """A SQLite table declaration plus its indexes."""
+    """Schema metadata for one SQLite table."""
 
     name: str
     create_sql: str
-    indexes: tuple[str, ...]
-    required_columns: tuple[str, ...]
-
-
-def _quote_sql_string(value: str) -> str:
-    """Return a safely quoted SQLite string literal for static schema values."""
-
-    escaped = value.replace("'", "''")
-    return f"'{escaped}'"
-
-
-def _sql_in_list(values: tuple[str, ...]) -> str:
-    """Return a SQL IN-list from trusted static enum values."""
-
-    return ", ".join(_quote_sql_string(value) for value in values)
-
-
-SESSION_STATE_SQL_VALUES = _sql_in_list(SessionState.values())
+    expected_columns: tuple[str, ...]
 
 
 CREATE_SCHEMA_MIGRATIONS_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
-    applied_at INTEGER NOT NULL,
-    description TEXT NOT NULL
+    applied_at INTEGER NOT NULL
 );
-""".strip()
+"""
 
-
-CREATE_SESSIONS_TABLE_SQL = f"""
+CREATE_SESSIONS_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS sessions (
     id TEXT PRIMARY KEY,
     started_at INTEGER NOT NULL,
@@ -63,53 +38,107 @@ CREATE TABLE IF NOT EXISTS sessions (
     cwd TEXT,
     model TEXT,
     parent_session_id TEXT,
-    total_input_tokens INTEGER NOT NULL DEFAULT 0 CHECK (total_input_tokens >= 0),
-    total_output_tokens INTEGER NOT NULL DEFAULT 0 CHECK (total_output_tokens >= 0),
-    estimated_cost_usd REAL NOT NULL DEFAULT 0.0 CHECK (estimated_cost_usd >= 0.0),
-    state TEXT NOT NULL DEFAULT 'healthy' CHECK (state IN ({SESSION_STATE_SQL_VALUES})),
+    total_input_tokens INTEGER NOT NULL DEFAULT 0,
+    total_output_tokens INTEGER NOT NULL DEFAULT 0,
+    estimated_cost_usd REAL NOT NULL DEFAULT 0.0,
+    state TEXT NOT NULL DEFAULT 'healthy' CHECK (state IN ('healthy', 'watching', 'degrading', 'critical', 'handoff_pending', 'handed_off')),
     handoff_summary_path TEXT,
     created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    FOREIGN KEY (parent_session_id) REFERENCES sessions(id) ON DELETE SET NULL
+    updated_at INTEGER NOT NULL
 );
-""".strip()
-
+"""
 
 CREATE_TURNS_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS turns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     session_id TEXT NOT NULL,
-    turn_index INTEGER NOT NULL CHECK (turn_index >= 0),
+    turn_index INTEGER NOT NULL,
     started_at INTEGER NOT NULL,
     ended_at INTEGER,
     user_prompt_preview TEXT,
-    tool_count INTEGER NOT NULL DEFAULT 0 CHECK (tool_count >= 0),
-    error_count INTEGER NOT NULL DEFAULT 0 CHECK (error_count >= 0),
+    tool_count INTEGER NOT NULL DEFAULT 0,
+    error_count INTEGER NOT NULL DEFAULT 0,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
     UNIQUE (session_id, turn_index)
 );
-""".strip()
+"""
+
+CREATE_TOOL_USES_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS tool_uses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    turn_index INTEGER,
+    timestamp_ms INTEGER NOT NULL,
+    tool_name TEXT NOT NULL,
+    input_hash TEXT,
+    input_size INTEGER NOT NULL DEFAULT 0,
+    output_size INTEGER NOT NULL DEFAULT 0,
+    success INTEGER NOT NULL DEFAULT 1,
+    duration_ms INTEGER,
+    input_tokens_est INTEGER NOT NULL DEFAULT 0,
+    output_tokens_est INTEGER NOT NULL DEFAULT 0,
+    input_preview TEXT,
+    output_preview TEXT,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+);
+"""
+
+CREATE_SIGNALS_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    turn_index INTEGER,
+    timestamp_ms INTEGER NOT NULL,
+    signal_type TEXT NOT NULL,
+    score REAL NOT NULL,
+    confidence REAL NOT NULL DEFAULT 1.0,
+    health_score REAL NOT NULL,
+    state_before TEXT,
+    state_after TEXT,
+    explanation TEXT,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+);
+"""
+
+CREATE_ALERTS_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS alerts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    turn_index INTEGER,
+    timestamp_ms INTEGER NOT NULL,
+    alert_type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    message TEXT NOT NULL,
+    signal_type TEXT,
+    health_score REAL,
+    state TEXT,
+    delivered_to TEXT NOT NULL DEFAULT 'claude',
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+);
+"""
+
+SESSIONS_TABLE_SQL = CREATE_SESSIONS_TABLE_SQL
+TURNS_TABLE_SQL = CREATE_TURNS_TABLE_SQL
+TOOL_USES_TABLE_SQL = CREATE_TOOL_USES_TABLE_SQL
+SIGNALS_TABLE_SQL = CREATE_SIGNALS_TABLE_SQL
+ALERTS_TABLE_SQL = CREATE_ALERTS_TABLE_SQL
 
 
 SCHEMA_MIGRATIONS_TABLE = TableSchema(
     name="schema_migrations",
     create_sql=CREATE_SCHEMA_MIGRATIONS_TABLE_SQL,
-    indexes=(),
-    required_columns=("version", "applied_at", "description"),
+    expected_columns=("version", "applied_at"),
 )
-
 
 SESSIONS_TABLE = TableSchema(
     name="sessions",
     create_sql=CREATE_SESSIONS_TABLE_SQL,
-    indexes=(
-        "CREATE INDEX IF NOT EXISTS idx_sessions_started_at ON sessions(started_at);",
-        "CREATE INDEX IF NOT EXISTS idx_sessions_state ON sessions(state);",
-        "CREATE INDEX IF NOT EXISTS idx_sessions_parent ON sessions(parent_session_id);",
-    ),
-    required_columns=(
+    expected_columns=(
         "id",
         "started_at",
         "ended_at",
@@ -126,15 +155,10 @@ SESSIONS_TABLE = TableSchema(
     ),
 )
 
-
 TURNS_TABLE = TableSchema(
     name="turns",
     create_sql=CREATE_TURNS_TABLE_SQL,
-    indexes=(
-        "CREATE INDEX IF NOT EXISTS idx_turns_session ON turns(session_id, turn_index);",
-        "CREATE INDEX IF NOT EXISTS idx_turns_started_at ON turns(started_at);",
-    ),
-    required_columns=(
+    expected_columns=(
         "id",
         "session_id",
         "turn_index",
@@ -148,46 +172,133 @@ TURNS_TABLE = TableSchema(
     ),
 )
 
+TOOL_USES_TABLE = TableSchema(
+    name="tool_uses",
+    create_sql=CREATE_TOOL_USES_TABLE_SQL,
+    expected_columns=(
+        "id",
+        "session_id",
+        "turn_index",
+        "timestamp_ms",
+        "tool_name",
+        "input_hash",
+        "input_size",
+        "output_size",
+        "success",
+        "duration_ms",
+        "input_tokens_est",
+        "output_tokens_est",
+        "input_preview",
+        "output_preview",
+        "created_at",
+    ),
+)
+
+SIGNALS_TABLE = TableSchema(
+    name="signals",
+    create_sql=CREATE_SIGNALS_TABLE_SQL,
+    expected_columns=(
+        "id",
+        "session_id",
+        "turn_index",
+        "timestamp_ms",
+        "signal_type",
+        "score",
+        "confidence",
+        "health_score",
+        "state_before",
+        "state_after",
+        "explanation",
+        "created_at",
+    ),
+)
+
+ALERTS_TABLE = TableSchema(
+    name="alerts",
+    create_sql=CREATE_ALERTS_TABLE_SQL,
+    expected_columns=(
+        "id",
+        "session_id",
+        "turn_index",
+        "timestamp_ms",
+        "alert_type",
+        "severity",
+        "message",
+        "signal_type",
+        "health_score",
+        "state",
+        "delivered_to",
+        "created_at",
+    ),
+)
 
 TABLES: tuple[TableSchema, ...] = (
     SCHEMA_MIGRATIONS_TABLE,
     SESSIONS_TABLE,
     TURNS_TABLE,
+    TOOL_USES_TABLE,
+    SIGNALS_TABLE,
+    ALERTS_TABLE,
 )
+
+INDEX_SQL = [
+    "CREATE INDEX IF NOT EXISTS idx_sessions_started_at ON sessions(started_at);",
+    "CREATE INDEX IF NOT EXISTS idx_sessions_state ON sessions(state);",
+    "CREATE INDEX IF NOT EXISTS idx_sessions_parent ON sessions(parent_session_id);",
+    "CREATE INDEX IF NOT EXISTS idx_turns_session ON turns(session_id, turn_index);",
+    "CREATE INDEX IF NOT EXISTS idx_turns_started_at ON turns(started_at);",
+    "CREATE INDEX IF NOT EXISTS idx_tool_uses_session ON tool_uses(session_id, timestamp_ms);",
+    "CREATE INDEX IF NOT EXISTS idx_tool_uses_hash ON tool_uses(session_id, input_hash);",
+    "CREATE INDEX IF NOT EXISTS idx_tool_uses_turn ON tool_uses(session_id, turn_index);",
+    "CREATE INDEX IF NOT EXISTS idx_signals_session ON signals(session_id, timestamp_ms);",
+    "CREATE INDEX IF NOT EXISTS idx_signals_type ON signals(session_id, signal_type);",
+    "CREATE INDEX IF NOT EXISTS idx_alerts_session ON alerts(session_id, timestamp_ms);",
+    "CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts(session_id, severity);",
+]
+
+TABLE_SQL = [table.create_sql for table in TABLES]
+SCHEMA_SQL = TABLE_SQL + INDEX_SQL
+
+
+def create_schema_sql() -> str:
+    """Return all SQLite schema statements as one executescript-compatible string."""
+
+    return "\n".join(statement.strip() for statement in SCHEMA_SQL if statement.strip())
+
+
+def schema_statements() -> list[str]:
+    """Return all SQLite schema statements in execution order."""
+
+    return [statement.strip() for statement in SCHEMA_SQL if statement.strip()]
 
 
 def schema_table_names() -> tuple[str, ...]:
-    """Return table names in creation order."""
+    """Return all schema table names, including internal migration metadata."""
 
     return tuple(table.name for table in TABLES)
 
 
-def expected_columns(table_name: str) -> tuple[str, ...]:
-    """Return expected columns for a known schema table."""
+def table_names() -> tuple[str, ...]:
+    """Return Day 9 product data tables, excluding internal metadata tables."""
+
+    return ("sessions", "turns", "tool_uses", "signals", "alerts")
+
+
+def expected_columns(table_name: str | TableSchema) -> tuple[str, ...]:
+    """Return expected columns for a known table."""
+
+    resolved_name = table_name.name if isinstance(table_name, TableSchema) else table_name
 
     for table in TABLES:
-        if table.name == table_name:
-            return table.required_columns
+        if table.name == resolved_name:
+            return table.expected_columns
 
-    known = ", ".join(schema_table_names())
-    msg = f"Unknown schema table: {table_name!r}. Known tables: {known}"
+    msg = f"Unknown schema table: {resolved_name}"
     raise ValueError(msg)
 
 
-def create_schema_sql() -> str:
-    """Return a complete SQL script for the current Day 8 schema."""
-
-    statements: list[str] = []
-
-    for table in TABLES:
-        statements.append(table.create_sql)
-        statements.extend(table.indexes)
-
-    return "\n\n".join(statements)
-
-
 def schema_summary() -> dict[str, object]:
-    """Return a small serialisable summary for docs, CLI, and tests."""
+    """Return a small serialisable schema summary for CLI/tests."""
 
     return {
         "schema_version": SCHEMA_VERSION,
