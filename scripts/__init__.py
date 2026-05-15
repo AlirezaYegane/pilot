@@ -1,1 +1,1 @@
-"""Project utility scripts."""
+__all__: list[str] = []
