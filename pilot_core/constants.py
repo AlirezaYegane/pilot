@@ -124,6 +124,8 @@ class Defaults:
     HEALTH_DEGRADING_MIN = 0.40
     STATE_HYSTERESIS = 0.05
 
+    DB_BUSY_TIMEOUT_MS = 5_000
+
 
 ALL_SESSION_STATES: tuple[SessionState, ...] = tuple(SessionState)
 ALL_SIGNAL_NAMES: tuple[SignalName, ...] = tuple(SignalName)
