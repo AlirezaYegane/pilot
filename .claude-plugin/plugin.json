@@ -1,9 +1,15 @@
 {
   "name": "pilot",
   "version": "0.1.0",
-  "description": "Autopilot for Claude Code sessions",
-  "author": "@your-handle",
-  "homepage": "https://github.com/your-name/pilot",
-  "keywords": ["claude-code", "monitoring", "budget", "handoff"],
+  "description": "Autopilot for Claude Code sessions. Detect degradation, track budget burn, and prepare clean handoffs.",
+  "author": "Alireza Yegane",
+  "homepage": "https://github.com/AlirezaYegane/pilot",
+  "keywords": [
+    "claude-code",
+    "agent-monitoring",
+    "handoff",
+    "sqlite",
+    "developer-tools"
+  ],
   "license": "MIT"
 }

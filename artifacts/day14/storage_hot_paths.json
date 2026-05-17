@@ -1,0 +1,73 @@
+{
+  "config": {
+    "busy_timeout_ms": 5000,
+    "concurrency_events_per_writer": 50,
+    "concurrency_writers": 4,
+    "iterations": 250
+  },
+  "db_path": "artifacts\\day14\\day14_storage_benchmark.db",
+  "locking_probe": {
+    "actual_events": 200,
+    "elapsed_ms": 311.4572,
+    "errors": [],
+    "events_per_writer": 50,
+    "expected_events": 200,
+    "ok": true,
+    "writers": 4
+  },
+  "schema_v1": {
+    "indexes": [
+      "idx_alerts_session",
+      "idx_alerts_severity",
+      "idx_sessions_parent",
+      "idx_sessions_started_at",
+      "idx_sessions_state",
+      "idx_signals_session",
+      "idx_signals_type",
+      "idx_tool_uses_hash",
+      "idx_tool_uses_session",
+      "idx_turns_session"
+    ],
+    "missing_index_prefixes": [],
+    "missing_tables": [],
+    "ok": true,
+    "tables": [
+      "alerts",
+      "schema_migrations",
+      "sessions",
+      "signals",
+      "tool_uses",
+      "turns"
+    ]
+  },
+  "timings": {
+    "insert_tool_use": {
+      "count": 250,
+      "max_ms": 2.6745,
+      "min_ms": 0.9588,
+      "p50_ms": 1.2216,
+      "p95_ms": 1.4187
+    },
+    "insert_turn": {
+      "count": 250,
+      "max_ms": 4.4003,
+      "min_ms": 0.9304,
+      "p50_ms": 1.2234,
+      "p95_ms": 1.4375
+    },
+    "select_recent_tool_uses": {
+      "count": 250,
+      "max_ms": 0.0757,
+      "min_ms": 0.0165,
+      "p50_ms": 0.0337,
+      "p95_ms": 0.0457
+    },
+    "update_session_state": {
+      "count": 250,
+      "max_ms": 1.5494,
+      "min_ms": 0.9382,
+      "p50_ms": 1.1816,
+      "p95_ms": 1.3886
+    }
+  }
+}
