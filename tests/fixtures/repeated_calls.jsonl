@@ -1,0 +1,5 @@
+{"session_id":"day23-repeated-calls","turn_index":1,"tool_name":"Bash","tool_input":{"command":"pytest"},"success":true}
+{"session_id":"day23-repeated-calls","turn_index":1,"tool_name":"Read","tool_input":{"file_path":"README.md"},"success":true}
+{"session_id":"day23-repeated-calls","turn_index":1,"tool_name":"Bash","tool_input":{"command":" pytest "},"success":true}
+{"session_id":"day23-repeated-calls","turn_index":1,"tool_name":"Bash","tool_input":{"command":"pytest"},"success":true}
+{"session_id":"day23-repeated-calls","turn_index":1,"tool_name":"Bash","tool_input":{"command":"pytest"},"success":true}
