@@ -1,0 +1,5 @@
+{"session_id":"day24-error-cascade","turn_index":0,"tool_name":"Read","success":true,"timestamp_ms":1000}
+{"session_id":"day24-error-cascade","turn_index":0,"tool_name":"Bash","success":false,"error":{"type":"RuntimeError","message":"command failed"},"timestamp_ms":2000}
+{"session_id":"day24-error-cascade","turn_index":0,"tool_name":"Bash","success":false,"error":{"type":"RuntimeError","message":"same command failed again"},"timestamp_ms":3000}
+{"session_id":"day24-error-cascade","turn_index":0,"tool_name":"Edit","success":true,"timestamp_ms":4000}
+{"session_id":"day24-error-cascade","turn_index":0,"tool_name":"Bash","success":false,"error":{"type":"RuntimeError","message":"third failure in rolling window"},"timestamp_ms":5000}
