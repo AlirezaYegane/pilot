@@ -1,0 +1,10 @@
+{"session_id":"day26-context-bloat","turn_index":0,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":1000}
+{"session_id":"day26-context-bloat","turn_index":1,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":2000}
+{"session_id":"day26-context-bloat","turn_index":2,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":3000}
+{"session_id":"day26-context-bloat","turn_index":3,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":4000}
+{"session_id":"day26-context-bloat","turn_index":4,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":5000}
+{"session_id":"day26-context-bloat","turn_index":5,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":6000}
+{"session_id":"day26-context-bloat","turn_index":6,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":7000}
+{"session_id":"day26-context-bloat","turn_index":7,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":8000}
+{"session_id":"day26-context-bloat","turn_index":8,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":9000}
+{"session_id":"day26-context-bloat","turn_index":9,"input_tokens":12000,"output_tokens":5000,"total_tokens":17000,"model_name":"claude-sonnet-4","timestamp_ms":10000}
