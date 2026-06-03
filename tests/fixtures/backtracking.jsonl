@@ -1,0 +1,5 @@
+{"event_type":"tool_use","tool_name":"Edit","turn_index":1,"tool_input":{"file_path":"pilot_core/signals/backtracking.py"},"timestamp_ms":1000}
+{"event_type":"tool_use","tool_name":"Read","turn_index":1,"tool_input":{"file_path":"pilot_core/signals/backtracking.py"},"timestamp_ms":1100}
+{"event_type":"tool_use","tool_name":"Edit","turn_index":2,"tool_input":{"file_path":"pilot_core/signals/backtracking.py"},"timestamp_ms":1200}
+{"event_type":"tool_use","tool_name":"Edit","turn_index":3,"tool_input":{"file_path":"pilot_core/signals/backtracking.py"},"timestamp_ms":1300}
+{"event_type":"tool_use","tool_name":"Edit","turn_index":3,"tool_input":{"file_path":"tests/unit/test_backtracking_signal.py"},"timestamp_ms":1400}
