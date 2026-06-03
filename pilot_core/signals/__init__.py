@@ -30,6 +30,9 @@ __all__ = [
     "ContextSaturationSignal",
     "ErrorCascadeResult",
     "ErrorCascadeSignal",
+    "RawRecord",
+    "SignalEngineV1Result",
+    "SignalLikeResult",
     "TokenBurnResult",
     "TokenBurnSignal",
     "TokenEvent",
@@ -44,6 +47,7 @@ __all__ = [
     "estimate_context_tokens",
     "evaluate_context_saturation",
     "evaluate_error_cascade",
+    "evaluate_signal_engine_v1",
     "evaluate_token_burn",
     "failure_rate",
     "normalise_token_event",
@@ -85,4 +89,10 @@ from pilot_core.signals.token_burn import (
     normalise_turn_token_usage,
     recent_and_baseline_windows,
     token_burn_ratio,
+)
+from pilot_core.signals.v1 import (
+    RawRecord,
+    SignalEngineV1Result,
+    SignalLikeResult,
+    evaluate_signal_engine_v1,
 )
