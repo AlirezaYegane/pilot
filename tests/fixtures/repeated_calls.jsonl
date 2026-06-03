@@ -1,0 +1,4 @@
+{"session_id":"day27-repeated-calls","turn_index":0,"tool_name":"Bash","tool_input":{"command":"pytest"},"input_payload":{"command":"pytest"},"input_hash":"same-pytest-command","success":true,"timestamp_ms":1000}
+{"session_id":"day27-repeated-calls","turn_index":0,"tool_name":"Bash","tool_input":{"command":"pytest"},"input_payload":{"command":"pytest"},"input_hash":"same-pytest-command","success":true,"timestamp_ms":2000}
+{"session_id":"day27-repeated-calls","turn_index":0,"tool_name":"Bash","tool_input":{"command":"pytest"},"input_payload":{"command":"pytest"},"input_hash":"same-pytest-command","success":true,"timestamp_ms":3000}
+{"session_id":"day27-repeated-calls","turn_index":0,"tool_name":"Read","tool_input":{"file_path":"README.md"},"input_payload":{"file_path":"README.md"},"input_hash":"read-readme","success":true,"timestamp_ms":4000}
