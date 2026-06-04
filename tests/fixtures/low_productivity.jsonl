@@ -1,0 +1,5 @@
+{"session_id":"baseline-session","phase":"baseline","turn_index":1,"lines_changed":25,"total_tokens":2500,"timestamp_ms":1000}
+{"session_id":"baseline-session","phase":"baseline","turn_index":2,"lines_added":15,"lines_deleted":10,"input_tokens":2000,"output_tokens":500,"timestamp_ms":2000}
+{"session_id":"baseline-session","phase":"baseline","turn_index":3,"insertions":20,"deletions":5,"input_tokens_est":2100,"output_tokens_est":400,"timestamp_ms":3000}
+{"session_id":"current-session","phase":"current","turn_index":1,"lines_changed":1,"total_tokens":1200,"timestamp_ms":4000}
+{"session_id":"current-session","phase":"current","turn_index":2,"lines_added":1,"lines_deleted":0,"input_tokens":900,"output_tokens":100,"timestamp_ms":5000}
