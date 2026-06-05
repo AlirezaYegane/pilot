@@ -64,7 +64,12 @@ __all__ = [
     "SelfDoubtResult",
     "SelfDoubtSignal",
     "SignalEngineV1Result",
+    "SignalEvaluator",
     "SignalLikeResult",
+    "SignalRegistry",
+    "SignalRegistryConfig",
+    "SignalRegistryEntry",
+    "SignalRegistryEvaluation",
     "TokenBurnResult",
     "TokenBurnSignal",
     "TokenEvent",
@@ -74,6 +79,7 @@ __all__ = [
     "aggregate_productivity",
     "average_tokens_per_turn",
     "backtracking_severity",
+    "build_default_signal_registry",
     "calibrate_backtracking_score",
     "calibrate_context_saturation_score",
     "calibrate_error_cascade_score",
@@ -81,6 +87,7 @@ __all__ = [
     "calibrate_rate_limit_score",
     "calibrate_self_doubt_score",
     "calibrate_token_burn_score",
+    "clamp_registry_score",
     "compile_self_doubt_patterns",
     "context_saturation_ratio",
     "context_saturation_severity",
@@ -119,6 +126,7 @@ __all__ = [
     "resolve_model_context_limit",
     "resolve_plan_token_cap",
     "self_doubt_severity",
+    "signal_registry_config_from_config",
     "token_burn_ratio",
     "token_rate_per_minute",
 ]
@@ -191,6 +199,18 @@ from pilot_core.signals.rate_limit import (
     recent_usage_events,
     resolve_plan_token_cap,
     token_rate_per_minute,
+)
+from pilot_core.signals.registry import (
+    SignalEvaluator,
+    SignalRegistry,
+    SignalRegistryConfig,
+    SignalRegistryEntry,
+    SignalRegistryEvaluation,
+    build_default_signal_registry,
+    signal_registry_config_from_config,
+)
+from pilot_core.signals.registry import (
+    clamp_score as clamp_registry_score,
 )
 from pilot_core.signals.self_doubt import (
     DEFAULT_MIN_ASSISTANT_MESSAGES,
