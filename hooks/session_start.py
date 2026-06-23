@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Claude Code SessionStart hook entrypoint.
+"""Claude Code SessionStart hook for Pilot.
 
-This script intentionally exits 0 even if Pilot fails internally.
-Pilot must never break the user's Claude Code session.
+Day 48 wires previous-handoff resume context into SessionStart.
 """
 
 from __future__ import annotations
@@ -10,21 +9,19 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-def _bootstrap() -> None:
-    plugin_root = Path(__file__).resolve().parents[1]
-    sys.path.insert(0, str(plugin_root))
 
-
-def main() -> int:
+def _main() -> int:
     try:
-        _bootstrap()
-        from pilot_core.hook_handlers.session_start import main as handler_main
+        from pilot_core.session_resume import main
 
-        return handler_main()
+        return main()
     except Exception:
         return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(_main())
